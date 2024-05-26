@@ -34,6 +34,6 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git add data.csv
+          git add data/data.csv
           git commit -m "Update data"
           git push
