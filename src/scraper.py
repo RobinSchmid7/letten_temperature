@@ -1,5 +1,4 @@
 import os
-
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -47,9 +46,14 @@ def fetch_temperature_info(url):
 
         print(f"Date: {date}, Temperature: {temperature}°C, Open: {is_open}")
 
-        write_header = not os.path.exists('../data/data.csv')
+        # Use absolute path for the data directory
+        data_dir = os.path.abspath('../data')
+        os.makedirs(data_dir, exist_ok=True)
+        data_file = os.path.join(data_dir, 'data.csv')
 
-        with open('../data/data.csv', 'a', newline='') as file:
+        write_header = not os.path.exists(data_file)
+
+        with open(data_file, 'a', newline='') as file:
             writer = csv.writer(file)
             if write_header:
                 writer.writerow(['Date', 'Temp', 'Open'])
@@ -63,5 +67,3 @@ def fetch_temperature_info(url):
 url = "https://www.stadt-zuerich.ch/ssd/de/index/sport/schwimmen/sommerbaeder/flussbad_oberer_letten.html"
 result = fetch_temperature_info(url)
 print(result)
-
-
