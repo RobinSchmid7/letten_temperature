@@ -1,0 +1,68 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime
+import locale
+
+st.title('Obere Letten Status')
+
+COMFORT_TEMP = 18
+
+# Set the locale to German to interpret 'Mai' as May
+locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
+
+# Function to load temperature data
+def load_data():
+    # file_path = 'https://raw.githubusercontent.com/RobinSchmid7/temp_scraper/main/data/data.csv'
+    file_path = '/home/rschmid/git/temp_scraper/data/data.csv'  # Adjust the path as needed
+    try:
+        data = pd.read_csv(file_path, dayfirst=True)
+        # Adjust the format to match the date and time in the CSV
+        data['Date'] = pd.to_datetime(data['Date'], format='%d. %B %Y %H.%M Uhr')
+        # Ensure each date has only one data point, for safety
+        data = data.drop_duplicates(subset='Date', keep='first')
+        return data.sort_values(by='Date')
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return pd.DataFrame()
+
+# Load the temperature data
+data = load_data()
+
+# Filter to the most recent 7 days if there are more than 7 days of data
+if len(data) > 7:
+    data = data.tail(7)
+
+# Visualize the data if it's not empty
+if not data.empty:
+    sns.set_theme(style="whitegrid")
+    
+    # Plot temperature data
+    fig_temp, ax1 = plt.subplots(figsize=(10, 6))
+    sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Daily Temperature', ax=ax1)
+    ax1.fill_between(data['Date'], data['Temp'] - 1, data['Temp'] + 1, color='dodgerblue', alpha=0.3)
+    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Robin's comfortable temperature")
+    ax1.set_title('Water Temperature at Obere Letten', fontsize=16)
+    ax1.set_xlabel('Date', fontsize=14)
+    ax1.set_ylabel('Temperature (°C)', fontsize=14)
+    ax1.set_xticks(data['Date'])
+    ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    ax1.set_ylim(0, 30)
+    ax1.legend(loc='upper left')
+    plt.tight_layout()
+    st.pyplot(fig_temp)
+    
+    # Plot open/close status
+    fig_open, ax2 = plt.subplots(figsize=(10, 2))
+    colors = ['green' if status == 1 else 'red' for status in data['Open']]
+    ax2.bar(data['Date'], [1] * len(data), color=colors, width=0.1)  # Adjusted width to 0.1 for narrow bars
+    ax2.set_title('Open/Close Status at Obere Letten', fontsize=16)
+    ax2.set_xlabel('Date', fontsize=14)
+    ax2.set_yticks([])
+    ax2.set_xticks(data['Date'])
+    ax2.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    plt.tight_layout()
+    st.pyplot(fig_open)
+else:
+    st.markdown("No data available to display.")
