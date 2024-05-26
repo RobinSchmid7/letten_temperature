@@ -14,8 +14,8 @@ locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 # Function to load temperature data
 def load_data():
-    # file_path = 'https://raw.githubusercontent.com/RobinSchmid7/temp_scraper/main/data/data.csv'
-    file_path = '/home/rschmid/git/temp_scraper/data/data.csv'  # Adjust the path as needed
+    file_path = 'https://raw.githubusercontent.com/RobinSchmid7/river_temp_scraper/master/data/data.csv'
+    # file_path = '/home/rschmid/git/river_temp_scraper/data/data.csv'  # Adjust the path as needed
     try:
         data = pd.read_csv(file_path, dayfirst=True)
         # Adjust the format to match the date and time in the CSV
