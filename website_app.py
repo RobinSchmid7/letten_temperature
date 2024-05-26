@@ -10,7 +10,10 @@ st.title('Obere Letten Status')
 COMFORT_TEMP = 18
 
 # Set the locale to German to interpret 'Mai' as May
-locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
+try:
+    locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
+except locale.Error:
+    st.warning("Locale 'de_DE.utf8' not found. Using default locale.")
 
 # Function to load temperature data
 def load_data():
