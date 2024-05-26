@@ -46,8 +46,9 @@ def fetch_temperature_info(url):
 
         print(f"Date: {date}, Temperature: {temperature}°C, Open: {is_open}")
 
-        # Use absolute path for the data directory
-        data_dir = os.path.abspath('../data')
+        # Use absolute path for the data directory relative to the script's location
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(script_dir, '../data')
         os.makedirs(data_dir, exist_ok=True)
         data_file = os.path.join(data_dir, 'data.csv')
 
