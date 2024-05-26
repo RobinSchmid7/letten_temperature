@@ -9,11 +9,15 @@ st.title('Obere Letten Status')
 
 COMFORT_TEMP = 18
 
-# Set the locale to German to interpret 'Mai' as May
-try:
-    locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
-except locale.Error:
-    st.warning("Locale 'de_DE.utf8' not found. Using default locale.")
+# # Set the locale to German to interpret 'Mai' as May
+# try:
+#     locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
+# except locale.Error:
+#     try:
+#         locale.setlocale(locale.LC_TIME, 'en_US.utf8')
+#         st.warning("Locale 'de_DE.utf8' not found. Using 'en_US.utf8' instead.")
+#     except locale.Error:
+#         st.warning("Locale 'en_US.utf8' not found. Using default locale.")
 
 # Function to load temperature data
 def load_data():
@@ -21,6 +25,16 @@ def load_data():
     # file_path = '/home/rschmid/git/river_temp_scraper/data/data.csv'  # Adjust the path as needed
     try:
         data = pd.read_csv(file_path, dayfirst=True)
+        
+        # Manual mapping of German month names to English
+        german_to_english_months = {
+            'Januar': 'January', 'Februar': 'February', 'März': 'March', 'April': 'April',
+            'Mai': 'May', 'Juni': 'June', 'Juli': 'July', 'August': 'August',
+            'September': 'September', 'Oktober': 'October', 'November': 'November', 'Dezember': 'December'
+        }
+        for german, english in german_to_english_months.items():
+            data['Date'] = data['Date'].str.replace(german, english)
+        
         # Adjust the format to match the date and time in the CSV
         data['Date'] = pd.to_datetime(data['Date'], format='%d. %B %Y %H.%M Uhr')
         # Ensure each date has only one data point, for safety
