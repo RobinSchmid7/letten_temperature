@@ -70,6 +70,20 @@ if not data.empty:
     plt.tight_layout()
     st.pyplot(fig_temp)
     
+    # Plot water flow data
+    fig_flow, ax3 = plt.subplots(figsize=(10, 6))
+    sns.lineplot(x='Date', y='Flow', data=data, marker='o', color='mediumseagreen', label='Daily Water Flow', ax=ax3)
+    ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='mediumseagreen', alpha=0.3)
+    ax3.set_title('Water Flow at Obere Letten', fontsize=16)
+    ax3.set_xlabel('Date', fontsize=14)
+    ax3.set_ylabel('Water Flow (m³/l)', fontsize=14)
+    ax3.set_xticks(data['Date'])
+    ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    ax3.set_ylim(data['Flow'].min() - 50, data['Flow'].max() + 50)  # Adjust limits based on your data range
+    ax3.legend(loc='upper left')
+    plt.tight_layout()
+    st.pyplot(fig_flow)
+    
     # Plot open/close status
     fig_open, ax2 = plt.subplots(figsize=(10, 2))
     colors = ['green' if status == 1 else 'red' for status in data['Open']]
