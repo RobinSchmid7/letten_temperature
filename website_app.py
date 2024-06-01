@@ -71,7 +71,7 @@ if not data.empty:
     ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='mediumseagreen', alpha=0.3)
     ax3.set_title('Water Flow at Obere Letten', fontsize=16)
     ax3.set_xlabel('Date', fontsize=14)
-    ax3.set_ylabel('Water Flow (m³/l)', fontsize=14)
+    ax3.set_ylabel('Water Flow (m³/s)', fontsize=14)
     ax3.set_xticks(data['Date'])
     ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
     ax3.set_ylim(data['Flow'].min() - 50, data['Flow'].max() + 50)  # Adjust limits based on your data range
