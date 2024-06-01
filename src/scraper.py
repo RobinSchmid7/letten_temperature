@@ -51,6 +51,28 @@ def save_to_csv(data, data_file):
             writer.writerow(['Date', 'Temp', 'Open', 'River Data'])
         writer.writerow(data)
 
+def remove_duplicates_from_csv(data_file):
+    if not os.path.exists(data_file):
+        return
+
+    with open(data_file, 'r', newline='') as file:
+        reader = csv.reader(file)
+        header = next(reader)
+        rows = list(reader)
+
+    unique_rows = []
+    seen = set()
+    for row in rows:
+        row_tuple = tuple(row)
+        if row_tuple not in seen:
+            seen.add(row_tuple)
+            unique_rows.append(row)
+
+    with open(data_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
+        writer.writerows(unique_rows)
+
 def fetch_temperature_info(url1, url2):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -80,6 +102,7 @@ def fetch_temperature_info(url1, url2):
         os.makedirs(data_dir, exist_ok=True)
         data_file = os.path.join(data_dir, 'data.csv')
         save_to_csv([date, temperature, is_open, river_data], data_file)
+        remove_duplicates_from_csv(data_file)
 
         return f"Data saved: Date - {date}, Temperature - {temperature}°C, Open - {is_open}, River Data - {river_data}"
     except requests.RequestException as e:

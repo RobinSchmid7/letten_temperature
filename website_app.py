@@ -2,27 +2,15 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
-import locale
+from datetime import datetime, timedelta
 
 st.title('Obere Letten Status')
 
 COMFORT_TEMP = 18
 
-# # Set the locale to German to interpret 'Mai' as May
-# try:
-#     locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
-# except locale.Error:
-#     try:
-#         locale.setlocale(locale.LC_TIME, 'en_US.utf8')
-#         st.warning("Locale 'de_DE.utf8' not found. Using 'en_US.utf8' instead.")
-#     except locale.Error:
-#         st.warning("Locale 'en_US.utf8' not found. Using default locale.")
-
 # Function to load temperature data
 def load_data():
     file_path = 'https://raw.githubusercontent.com/RobinSchmid7/river_temp_scraper/master/data/data.csv'
-    # file_path = '/home/rschmid/git/river_temp_scraper/data/data.csv'  # Adjust the path as needed
     try:
         data = pd.read_csv(file_path, dayfirst=True)
         
@@ -39,7 +27,12 @@ def load_data():
         data['Date'] = pd.to_datetime(data['Date'], format='%d. %B %Y %H.%M Uhr')
         # Ensure each date has only one data point, for safety
         data = data.drop_duplicates(subset='Date', keep='first')
-        return data.sort_values(by='Date')
+        
+        # Filter data to ensure points are at least 3 hours apart
+        data = data.sort_values(by='Date')
+        data = data[data['Date'].diff().dt.total_seconds() > 3 * 3600]
+        
+        return data
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return pd.DataFrame()
@@ -47,9 +40,11 @@ def load_data():
 # Load the temperature data
 data = load_data()
 
-# Filter to the most recent 7 days if there are more than 7 days of data
-if len(data) > 7:
-    data = data.tail(7)
+# Filter to the most recent 14 days
+if not data.empty:
+    last_date = data['Date'].max()
+    start_date = last_date - timedelta(days=14)
+    data = data[data['Date'] > start_date]
 
 # Visualize the data if it's not empty
 if not data.empty:
@@ -64,7 +59,7 @@ if not data.empty:
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
     ax1.set_xticks(data['Date'])
-    ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
     ax1.set_ylim(0, 30)
     ax1.legend(loc='upper left')
     plt.tight_layout()
@@ -78,7 +73,7 @@ if not data.empty:
     ax3.set_xlabel('Date', fontsize=14)
     ax3.set_ylabel('Water Flow (m³/l)', fontsize=14)
     ax3.set_xticks(data['Date'])
-    ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
     ax3.set_ylim(data['Flow'].min() - 50, data['Flow'].max() + 50)  # Adjust limits based on your data range
     ax3.legend(loc='upper left')
     plt.tight_layout()
@@ -92,7 +87,7 @@ if not data.empty:
     ax2.set_xlabel('Date', fontsize=14)
     ax2.set_yticks([])
     ax2.set_xticks(data['Date'])
-    ax2.set_xticklabels(data['Date'].dt.strftime('%d %b %Y'), rotation=45)
+    ax2.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
     plt.tight_layout()
     st.pyplot(fig_open)
 else:
