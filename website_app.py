@@ -3,10 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
+import requests
 
-st.title('[Obere Letten River Status](https://www.google.com/maps/place/Flussbad+Oberer+Letten/@47.3856866,8.5345306,15z/data=!4m6!3m5!1s0x47900a0d5e01bd17:0xb1fa5895058447f!8m2!3d47.3856866!4d8.5345306!16s%2Fg%2F1tknjc87?entry=ttu)')
+st.title('Swimming Status')
 
-COMFORT_TEMP = 18
+COMFORT_TEMP = 21
 
 # Function to load temperature data
 def load_data():
@@ -37,9 +38,40 @@ def load_data():
         st.error(f"Error loading data: {e}")
         return pd.DataFrame()
 
+# Function to get current weather data
+def get_weather():
+    api_key = '352949661d130d8cf168b7edba44b8d3'  # Replace with your OpenWeatherMap API key
+    url = f'http://api.openweathermap.org/data/2.5/weather?q=Zurich&appid={api_key}&units=metric'
+    try:
+        response = requests.get(url)
+        weather_data = response.json()
+        
+        # Check if the expected keys are in the response
+        if 'main' in weather_data and 'weather' in weather_data:
+            temp = weather_data['main']['temp']
+            sunshine = weather_data['weather'][0]['description']
+            return temp, sunshine
+        else:
+            st.error("Unexpected response format from weather API.")
+            return None, None
+    except Exception as e:
+        st.error(f"Error fetching weather data: {e}")
+        return None, None
+
 # Load the temperature data
 data = load_data()
 
+# Get current weather data
+current_temp, current_sunshine = get_weather()
+
+# Display current weather data
+if current_temp is not None and current_sunshine is not None:
+    st.markdown(f"### Current Weather in Zurich")
+    st.markdown(f"**Temperature:** {current_temp} °C")
+    st.markdown(f"**Sunshine:** {current_sunshine}")
+
+
+st.markdown(f"### Current Status of Swimming Place [Obere Letten](https://www.google.com/maps/place/Flussbad+Oberer+Letten/@47.3856866,8.5345306,15z/data=!4m6!3m5!1s0x47900a0d5e01bd17:0xb1fa5895058447f!8m2!3d47.3856866!4d8.5345306!16s%2Fg%2F1tknjc87?entry=ttu)")
 # Filter to the most recent 14 days
 if not data.empty:
     last_date = data['Date'].max()
@@ -53,8 +85,7 @@ if not data.empty:
     # Plot temperature data
     fig_temp, ax1 = plt.subplots(figsize=(10, 6))
     sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Daily Temperature', ax=ax1)
-    ax1.fill_between(data['Date'], data['Temp'] - 1, data['Temp'] + 1, color='dodgerblue', alpha=0.3)
-    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Robin's comfortable temperature")
+    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Comfortable temperature")
     ax1.set_title('Water Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
