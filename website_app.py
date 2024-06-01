@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
 
-st.title('Obere Letten Status')
+st.title('[Obere Letten River Status](https://www.google.com/maps/place/Flussbad+Oberer+Letten/@47.3856866,8.5345306,15z/data=!4m6!3m5!1s0x47900a0d5e01bd17:0xb1fa5895058447f!8m2!3d47.3856866!4d8.5345306!16s%2Fg%2F1tknjc87?entry=ttu)')
 
 COMFORT_TEMP = 18
 
@@ -55,7 +55,7 @@ if not data.empty:
     sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Daily Temperature', ax=ax1)
     ax1.fill_between(data['Date'], data['Temp'] - 1, data['Temp'] + 1, color='dodgerblue', alpha=0.3)
     ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Robin's comfortable temperature")
-    ax1.set_title('Water Temperature at Obere Letten', fontsize=16)
+    ax1.set_title('Water Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
     ax1.set_xticks(data['Date'])
@@ -69,7 +69,7 @@ if not data.empty:
     fig_flow, ax3 = plt.subplots(figsize=(10, 6))
     sns.lineplot(x='Date', y='Flow', data=data, marker='o', color='mediumseagreen', label='Daily Water Flow', ax=ax3)
     ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='mediumseagreen', alpha=0.3)
-    ax3.set_title('Water Flow at Obere Letten', fontsize=16)
+    ax3.set_title('Water Flow', fontsize=16)
     ax3.set_xlabel('Date', fontsize=14)
     ax3.set_ylabel('Water Flow (m³/s)', fontsize=14)
     ax3.set_xticks(data['Date'])
@@ -83,7 +83,7 @@ if not data.empty:
     fig_open, ax2 = plt.subplots(figsize=(10, 3))
     colors = ['green' if status == 1 else 'red' for status in data['Open']]
     ax2.scatter(data['Date'], [1] * len(data), color=colors, s=100)
-    ax2.set_title('Open/Close Status at Obere Letten', fontsize=16)
+    ax2.set_title('Open/Close Status', fontsize=16)
     ax2.set_xlabel('Date', fontsize=14)
     ax2.set_yticks([])
     ax2.set_xticks(data['Date'])
