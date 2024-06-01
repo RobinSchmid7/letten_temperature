@@ -92,3 +92,6 @@ if not data.empty:
     st.pyplot(fig_open)
 else:
     st.markdown("No data available to display.")
+
+# Author credentials
+st.markdown("© 2024 [Robin Schmid](https://github.com/RobinSchmid7)")
