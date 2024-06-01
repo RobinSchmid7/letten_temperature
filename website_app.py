@@ -84,8 +84,15 @@ if not data.empty:
     
     # Plot temperature data
     fig_temp, ax1 = plt.subplots(figsize=(10, 6))
-    sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Daily Temperature', ax=ax1)
-    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Comfortable temperature")
+    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Comfortable Temperature", zorder=1)
+    
+    # Compute and plot the monthly average water temperature
+    last_month_date = last_date - timedelta(days=30)
+    monthly_avg_temp = data[data['Date'] > last_month_date]['Temp'].mean()
+    ax1.axhline(monthly_avg_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Temp: {monthly_avg_temp:.2f} °C", zorder=1)
+    
+    sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Current Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    
     ax1.set_title('Water Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
@@ -98,8 +105,14 @@ if not data.empty:
     
     # Plot water flow data
     fig_flow, ax3 = plt.subplots(figsize=(10, 6))
-    sns.lineplot(x='Date', y='Flow', data=data, marker='o', color='mediumseagreen', label='Daily Water Flow', ax=ax3)
-    ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='mediumseagreen', alpha=0.3)
+    ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='dodgerblue', alpha=0.3, zorder=1)
+    
+    # Compute and plot the monthly average water flow
+    monthly_avg_flow = data[data['Date'] > last_month_date]['Flow'].mean()
+    ax3.axhline(monthly_avg_flow, color='orange', lw=2, ls='--', label=f"Monthly Average Flow: {monthly_avg_flow:.2f} m³/s", zorder=1)
+    
+    sns.lineplot(x='Date', y='Flow', data=data, marker='o', color='dodgerblue', label='Current Water Flow', ax=ax3, linewidth=2.5, zorder=2)
+    
     ax3.set_title('Water Flow', fontsize=16)
     ax3.set_xlabel('Date', fontsize=14)
     ax3.set_ylabel('Water Flow (m³/s)', fontsize=14)
