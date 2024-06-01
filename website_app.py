@@ -79,10 +79,10 @@ if not data.empty:
     plt.tight_layout()
     st.pyplot(fig_flow)
     
-    # Plot open/close status
-    fig_open, ax2 = plt.subplots(figsize=(10, 2))
+    # Plot open/close status as a 1D line with green and red dots
+    fig_open, ax2 = plt.subplots(figsize=(10, 3))
     colors = ['green' if status == 1 else 'red' for status in data['Open']]
-    ax2.bar(data['Date'], [1] * len(data), color=colors, width=0.1)  # Adjusted width to 0.1 for narrow bars
+    ax2.scatter(data['Date'], [1] * len(data), color=colors, s=100)
     ax2.set_title('Open/Close Status at Obere Letten', fontsize=16)
     ax2.set_xlabel('Date', fontsize=14)
     ax2.set_yticks([])
