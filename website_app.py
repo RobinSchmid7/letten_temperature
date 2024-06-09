@@ -11,7 +11,7 @@ COMFORT_TEMP = 21
 
 # Function to load temperature data
 def load_data():
-    file_path = 'https://raw.githubusercontent.com/RobinSchmid7/river_temp_scraper/master/data/data.csv'
+    file_path = 'https://raw.githubusercontent.com/RobinSchmid7/letten_temperature/master/data/data.csv'
     try:
         data = pd.read_csv(file_path, dayfirst=True)
         
