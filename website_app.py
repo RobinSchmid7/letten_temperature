@@ -7,8 +7,6 @@ import requests
 
 st.title('Obere Letten Status')
 
-COMFORT_TEMP = 21
-
 # Function to load temperature data
 def load_data():
     file_path = 'https://raw.githubusercontent.com/RobinSchmid7/letten_temperature/master/data/data.csv'
@@ -83,8 +81,7 @@ if not data.empty:
     
     # Plot temperature data
     fig_temp, ax1 = plt.subplots(figsize=(10, 6))
-    ax1.axhline(COMFORT_TEMP, color='green', lw=2, ls='--', label="Comfortable Temperature", zorder=1)
-    
+        
     # Compute and plot the monthly average water temperature
     last_month_date = last_date - timedelta(days=30)
     monthly_avg_temp = data[data['Date'] > last_month_date]['WaterTemp'].mean()
