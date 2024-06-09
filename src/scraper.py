@@ -60,7 +60,7 @@ def save_to_csv(data, data_file):
     with open(data_file, 'a', newline='') as file:
         writer = csv.writer(file)
         if write_header:
-            writer.writerow(['Date', 'Temp', 'Open', 'River Data', 'Outside Temp'])
+            writer.writerow(['Date', 'WaterTemp', 'Open', 'Flow', 'OutsideTemp'])
         writer.writerow(data)
 
 def remove_duplicates_from_csv(data_file):
