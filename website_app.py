@@ -87,20 +87,20 @@ if not data.empty:
     
     # Compute and plot the monthly average water temperature
     last_month_date = last_date - timedelta(days=30)
-    monthly_avg_temp = data[data['Date'] > last_month_date]['WatTemp'].mean()
+    monthly_avg_temp = data[data['Date'] > last_month_date]['WaterTemp'].mean()
     ax1.axhline(monthly_avg_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Water Temp: {monthly_avg_temp:.2f} °C", zorder=1)
     
-    sns.lineplot(x='Date', y='WatTemp', data=data, marker='o', color='dodgerblue', label='Current Water Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    sns.lineplot(x='Date', y='WaterTemp', data=data, marker='o', color='dodgerblue', label='Current Water Temperature', ax=ax1, linewidth=2.5, zorder=2)
     
     # Plot outside temperature
-    sns.lineplot(x='Date', y='OutTemp', data=data, marker='o', color='red', label='Current Outside Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    sns.lineplot(x='Date', y='OutsideTemp', data=data, marker='o', color='red', label='Current Outside Temperature', ax=ax1, linewidth=2.5, zorder=2)
     
     ax1.set_title('Water and Outside Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
     ax1.set_xticks(data['Date'])
     ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %H:%M'), rotation=90)
-    ax1.set_ylim(min(data['WatTemp'].min(), data['OutTemp'].min()) - 5, max(data['WatTemp'].max(), data['OutTemp'].max()) + 5)
+    ax1.set_ylim(min(data['WaterTemp'].min(), data['OutsideTemp'].min()) - 5, max(data['WaterTemp'].max(), data['OutsideTemp'].max()) + 5)
     ax1.legend(loc='upper left')
     ax1_right = ax1.twinx()
     ax1_right.set_yticks(ax1.get_yticks())
