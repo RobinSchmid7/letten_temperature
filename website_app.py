@@ -5,7 +5,7 @@ import seaborn as sns
 from datetime import datetime, timedelta
 import requests
 
-st.title('Swimming Status')
+st.title('Obere Letten Status')
 
 COMFORT_TEMP = 21
 
@@ -70,7 +70,6 @@ if current_temp is not None and current_sunshine is not None:
     st.markdown(f"**Temperature:** {current_temp} °C")
     st.markdown(f"**Sunshine:** {current_sunshine}")
 
-
 st.markdown(f"### Current Status of Swimming Place [Obere Letten](https://www.google.com/maps/place/Flussbad+Oberer+Letten/@47.3856866,8.5345306,15z/data=!4m6!3m5!1s0x47900a0d5e01bd17:0xb1fa5895058447f!8m2!3d47.3856866!4d8.5345306!16s%2Fg%2F1tknjc87?entry=ttu)")
 # Filter to the most recent 14 days
 if not data.empty:
@@ -88,25 +87,30 @@ if not data.empty:
     
     # Compute and plot the monthly average water temperature
     last_month_date = last_date - timedelta(days=30)
-    monthly_avg_temp = data[data['Date'] > last_month_date]['Temp'].mean()
-    ax1.axhline(monthly_avg_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Temp: {monthly_avg_temp:.2f} °C", zorder=1)
+    monthly_avg_temp = data[data['Date'] > last_month_date]['WatTemp'].mean()
+    ax1.axhline(monthly_avg_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Water Temp: {monthly_avg_temp:.2f} °C", zorder=1)
     
-    sns.lineplot(x='Date', y='Temp', data=data, marker='o', color='dodgerblue', label='Current Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    sns.lineplot(x='Date', y='WatTemp', data=data, marker='o', color='dodgerblue', label='Current Water Temperature', ax=ax1, linewidth=2.5, zorder=2)
     
-    ax1.set_title('Water Temperature', fontsize=16)
+    # Plot outside temperature
+    sns.lineplot(x='Date', y='OutTemp', data=data, marker='o', color='red', label='Current Outside Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    
+    ax1.set_title('Water and Outside Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
     ax1.set_ylabel('Temperature (°C)', fontsize=14)
     ax1.set_xticks(data['Date'])
-    ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
-    ax1.set_ylim(0, 30)
+    ax1.set_xticklabels(data['Date'].dt.strftime('%d %b %H:%M'), rotation=90)
+    ax1.set_ylim(min(data['WatTemp'].min(), data['OutTemp'].min()) - 5, max(data['WatTemp'].max(), data['OutTemp'].max()) + 5)
     ax1.legend(loc='upper left')
+    ax1_right = ax1.twinx()
+    ax1_right.set_yticks(ax1.get_yticks())
+    ax1_right.set_ylim(ax1.get_ylim())
     plt.tight_layout()
     st.pyplot(fig_temp)
     
     # Plot water flow data
     fig_flow, ax3 = plt.subplots(figsize=(10, 6))
-    ax3.fill_between(data['Date'], data['Flow'] - 10, data['Flow'] + 10, color='dodgerblue', alpha=0.3, zorder=1)
-    
+        
     # Compute and plot the monthly average water flow
     monthly_avg_flow = data[data['Date'] > last_month_date]['Flow'].mean()
     ax3.axhline(monthly_avg_flow, color='orange', lw=2, ls='--', label=f"Monthly Average Flow: {monthly_avg_flow:.2f} m³/s", zorder=1)
@@ -117,9 +121,12 @@ if not data.empty:
     ax3.set_xlabel('Date', fontsize=14)
     ax3.set_ylabel('Water Flow (m³/s)', fontsize=14)
     ax3.set_xticks(data['Date'])
-    ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
+    ax3.set_xticklabels(data['Date'].dt.strftime('%d %b %H:%M'), rotation=90)
     ax3.set_ylim(data['Flow'].min() - 50, data['Flow'].max() + 50)  # Adjust limits based on your data range
     ax3.legend(loc='upper left')
+    ax3_right = ax1.twinx()
+    ax3_right.set_yticks(ax1.get_yticks())
+    ax3_right.set_ylim(ax1.get_ylim())
     plt.tight_layout()
     st.pyplot(fig_flow)
     
@@ -131,7 +138,7 @@ if not data.empty:
     ax2.set_xlabel('Date', fontsize=14)
     ax2.set_yticks([])
     ax2.set_xticks(data['Date'])
-    ax2.set_xticklabels(data['Date'].dt.strftime('%d %b %Y %H:%M'), rotation=45)
+    ax2.set_xticklabels(data['Date'].dt.strftime('%d %b %H:%M'), rotation=90)
     plt.tight_layout()
     st.pyplot(fig_open)
 else:

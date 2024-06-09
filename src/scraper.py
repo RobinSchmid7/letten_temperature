@@ -43,12 +43,24 @@ def extract_river_data(soup):
             return cells[3].text.strip(), None
     return "Not Found", None
 
+def get_current_weather(api_key):
+    url = f'http://api.openweathermap.org/data/2.5/weather?q=Zurich&appid={api_key}&units=metric'
+    try:
+        response = requests.get(url)
+        weather_data = response.json()
+        if 'main' in weather_data:
+            return weather_data['main']['temp'], None
+        else:
+            return None, "Unexpected response format from weather API."
+    except Exception as e:
+        return None, f"Error fetching weather data: {e}"
+
 def save_to_csv(data, data_file):
     write_header = not os.path.exists(data_file)
     with open(data_file, 'a', newline='') as file:
         writer = csv.writer(file)
         if write_header:
-            writer.writerow(['Date', 'Temp', 'Open', 'River Data'])
+            writer.writerow(['Date', 'Temp', 'Open', 'River Data', 'Outside Temp'])
         writer.writerow(data)
 
 def remove_duplicates_from_csv(data_file):
@@ -73,7 +85,7 @@ def remove_duplicates_from_csv(data_file):
         writer.writerow(header)
         writer.writerows(unique_rows)
 
-def fetch_temperature_info(url1, url2):
+def fetch_temperature_info(url1, url2, api_key):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -97,18 +109,23 @@ def fetch_temperature_info(url1, url2):
         if river_error:
             return river_error
 
+        outside_temp, weather_error = get_current_weather(api_key)
+        if weather_error:
+            return weather_error
+
         script_dir = os.path.dirname(os.path.abspath(__file__))
         data_dir = os.path.join(script_dir, '../data')
         os.makedirs(data_dir, exist_ok=True)
         data_file = os.path.join(data_dir, 'data.csv')
-        save_to_csv([date, temperature, is_open, river_data], data_file)
+        save_to_csv([date, temperature, is_open, river_data, outside_temp], data_file)
         remove_duplicates_from_csv(data_file)
 
-        return f"Data saved: Date - {date}, Temperature - {temperature}°C, Open - {is_open}, River Data - {river_data}"
+        return f"Data saved: Date - {date}, Temperature - {temperature}°C, Open - {is_open}, River Data - {river_data}, Outside Temp - {outside_temp}°C"
     except requests.RequestException as e:
         return f"An error occurred: {e}"
 
 url1 = "https://www.stadt-zuerich.ch/ssd/de/index/sport/schwimmen/sommerbaeder/flussbad_oberer_letten.html"
 url2 = "https://hydroproweb.zh.ch/Listen/AktuelleWerte/aktuelle_werte.html"
-result = fetch_temperature_info(url1, url2)
+api_key = '352949661d130d8cf168b7edba44b8d3'
+result = fetch_temperature_info(url1, url2, api_key)
 print(result)
