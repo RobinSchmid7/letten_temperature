@@ -85,12 +85,18 @@ if not data.empty:
     # Compute and plot the monthly average water temperature
     last_month_date = last_date - timedelta(days=30)
     monthly_avg_temp = data[data['Date'] > last_month_date]['WaterTemp'].mean()
-    ax1.axhline(monthly_avg_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Water Temp: {monthly_avg_temp:.2f} °C", zorder=1)
+    ax1.axhline(monthly_avg_temp, color='lightblue', lw=2, ls='--', label=f"Monthly Average Water Temp: {monthly_avg_temp:.2f} °C", zorder=1)
     
     sns.lineplot(x='Date', y='WaterTemp', data=data, marker='o', color='dodgerblue', label='Current Water Temperature', ax=ax1, linewidth=2.5, zorder=2)
     
-    # Plot outside temperature
-    sns.lineplot(x='Date', y='OutsideTemp', data=data, marker='o', color='red', label='Current Outside Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    # Filter data to only include times between 12:00 and 18:00 for outside temperature
+    outside_temp_data = data[(data['Date'].dt.hour >= 12) & (data['Date'].dt.hour <= 18)]
+    
+    sns.lineplot(x='Date', y='OutsideTemp', data=outside_temp_data, marker='o', color='red', label='Current Outside Temperature', ax=ax1, linewidth=2.5, zorder=2)
+    
+    # Compute and plot the monthly average outside temperature
+    monthly_avg_outside_temp = outside_temp_data['OutsideTemp'].mean()
+    ax1.axhline(monthly_avg_outside_temp, color='orange', lw=2, ls='--', label=f"Monthly Average Outside Temp: {monthly_avg_outside_temp:.2f} °C", zorder=1)
     
     ax1.set_title('Water and Outside Temperature', fontsize=16)
     ax1.set_xlabel('Date', fontsize=14)
