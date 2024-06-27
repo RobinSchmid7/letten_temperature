@@ -5,7 +5,7 @@ import seaborn as sns
 from datetime import datetime, timedelta
 import requests
 
-st.title('Obere Letten Status')
+st.title('[Obere Letten Status](https://www.stadt-zuerich.ch/ssd/de/index/sport/schwimmen/sommerbaeder/flussbad_oberer_letten.html)')
 
 # Function to load temperature data
 def load_data():
@@ -68,7 +68,7 @@ if current_temp is not None and current_sunshine is not None:
     st.markdown(f"**Temperature:** {current_temp} °C")
     st.markdown(f"**Sunshine:** {current_sunshine}")
 
-st.markdown(f"### Current Status of Swimming Place [Obere Letten](https://www.google.com/maps/place/Flussbad+Oberer+Letten/@47.3856866,8.5345306,15z/data=!4m6!3m5!1s0x47900a0d5e01bd17:0xb1fa5895058447f!8m2!3d47.3856866!4d8.5345306!16s%2Fg%2F1tknjc87?entry=ttu)")
+st.markdown(f"### Current Status of Swimming Place Obere Letten")
 # Filter to the most recent 14 days
 if not data.empty:
     last_date = data['Date'].max()
