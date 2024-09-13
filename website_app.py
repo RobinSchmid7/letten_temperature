@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
 import requests
+import numpy as np
 
 st.title('[Obere Letten Status](https://www.stadt-zuerich.ch/ssd/de/index/sport/schwimmen/sommerbaeder/flussbad_oberer_letten.html)')
 
@@ -26,6 +27,9 @@ def load_data():
         data['Date'] = pd.to_datetime(data['Date'], format='%d. %B %Y %H.%M Uhr')
         # Ensure each date has only one data point, for safety
         data = data.drop_duplicates(subset='Date', keep='first')
+        
+        # Replace "Not Found" with NaN
+        data['OutsideTemp'] = data['OutsideTemp'].replace('Not Found', np.nan).astype(float)
         
         # Filter data to ensure points are at least 3 hours apart
         data = data.sort_values(by='Date')
